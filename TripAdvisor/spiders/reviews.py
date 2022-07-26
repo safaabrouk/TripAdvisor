@@ -86,6 +86,9 @@ class ReviewsSpider(scrapy.Spider):
         # Si le nombre des commentaires est différent de zéro alors on est dans la page dea activitées : 
         if len(reviews) != 0 :
 
+            # Récuperation du nom d'activité :
+            name = response.xpath('//*[@data-automation="mainH1"]/text()').get()
+
             # On va parcourir la liste des commentaires afin de récupérer les attributs de chaque commentaire :
             for review in reviews :
                 
@@ -93,7 +96,7 @@ class ReviewsSpider(scrapy.Spider):
                 ReviewsSpider.id += 1
 
                 # Nom du commentateur :
-                pr_name = review.xpath('.//*[@class="zpDvc"]/span/a/text()').get()
+                pr_name = review.xpath('.//*[@id="HEADING"]/span/a/text()').get()
 
                 # La recuperation de la localisation qui contient la ville + le pays : 
                 localisation = review.xpath('.//*[@class="zpDvc"]/div/div/span/text()').get()
@@ -158,7 +161,10 @@ class ReviewsSpider(scrapy.Spider):
                     'rv_date' : rv_date,
                     
                     #Nb personnes qu'ont trouvé le commentaire utile
-                    'rv_utile' : rv_likes,                
+                    'rv_utile' : rv_likes,     
+
+                    #Nom d'activité
+                    'name' : name           
                 }
                 
                 yield review
@@ -175,6 +181,10 @@ class ReviewsSpider(scrapy.Spider):
         else :
             # Récuperation des commentaires existent dans la page courant :
             reviews = response.xpath('//*[@data-test-target="HR_CC_CARD"]')
+
+            # Récuperation du nom d'hotél :
+            name = response.xpath('//*[@id="HEADING"]/text()').get()
+
             for review in reviews :
                 
                 # Incrementation automatique d'attribut "id"
@@ -259,7 +269,10 @@ class ReviewsSpider(scrapy.Spider):
                     'rv_date_sejour' : rv_date_sejour,
 
                     #Nb personnes qu'ont trouvé le commentaire utile
-                    'rv_utile' : rv_likes,                
+                    'rv_utile' : rv_likes,     
+
+                    #Nom d'hôtél 
+                    'name' : name            
                 }
                 
                 yield review

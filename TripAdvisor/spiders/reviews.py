@@ -234,8 +234,17 @@ class ReviewsSpider(scrapy.Spider):
                 date = review.xpath('.//*[@class="cRVSd"]/span/text()').get()
                 if date is not None :
                     date = date.replace('a écrit un avis','').replace('(','').replace(')','').strip().split(" ")
-                    if date[0].isnumeric() :
+                    # Cas de la date d'aujourd'hui :
+                    if date[0] == "Aujourd'hui" :
+                        rv_date = '0'+"/"+str(datetime.date.today().month)+"/"+str(datetime.date.today().year)
+                    # Cas de la date d'hier :
+                    elif date[0] == "Hier" :
+                        yesterday = datetime.date.today() - datetime.timedelta(days=1)
+                        rv_date = '0'+"/"+str(yesterday.month)+"/"+str(yesterday.year)
+                    # Cas du manque d'année :
+                    elif date[0].isnumeric() :
                         rv_date = format_date('0',date[1],datetime.date.today().year)
+                    # Cas de la date complete :
                     else :
                         rv_date = format_date('0',date[0],date[1])
 
